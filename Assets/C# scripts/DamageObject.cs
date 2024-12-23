@@ -44,10 +44,19 @@ public class DamageObject : MonoBehaviour
                     Destroy(effect.gameObject, effect.main.duration);
                 }
 
-                // Play sound effect
+                // Play sound effect using a temporary AudioSource
                 if (hitSound != null)
                 {
-                    AudioSource.PlayClipAtPoint(hitSound, transform.position, soundVolume);
+                    GameObject tempAudioSource = new GameObject("TempAudioSource");
+                    tempAudioSource.transform.position = transform.position;
+
+                    AudioSource audioSource = tempAudioSource.AddComponent<AudioSource>();
+                    audioSource.clip = hitSound;
+                    audioSource.volume = soundVolume;
+                    audioSource.spatialBlend = 1f; // Make it fully 3D
+                    audioSource.Play();
+
+                    Destroy(tempAudioSource, hitSound.length);
                 }
 
                 // Destroy this object if specified

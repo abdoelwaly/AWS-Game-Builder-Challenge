@@ -525,7 +525,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "-the ghosts took the town citizens as prisoners \n\n-you are the only
     hope they have\n\n-collect all 10 red gems to save the citizens\n\n-eat corns
-    to upgrade your abilities \n\n-(wasd) to move\n\n-(space bar) to jump"
+    to upgrade your abilities \n\n-(wasd) to move & (space bar) to jump\n\n-Escape
+    from ghosts\n\n-avoid exploding pumpkins"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -564,7 +565,7 @@ MonoBehaviour:
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: -10
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0

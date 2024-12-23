@@ -11,10 +11,9 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private Image healthBarFill;
     [SerializeField] private GameObject gameOverPanel;
 
-    [Header("Optional Effects")]
-    [SerializeField] private AudioSource hurtSound; // Optional
-    [SerializeField] private ParticleSystem hurtEffect; // Optional
-    [SerializeField] private Animator playerAnimator; // Optional
+    [Header("Effects")]
+    [SerializeField] private AudioClip hurtSound; // Attach audio file directly
+    [SerializeField] private GameObject hurtEffectPrefab; // Prefab to spawn on damage
 
     private bool isDead = false;
 
@@ -28,12 +27,6 @@ public class PlayerHealth : MonoBehaviour
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(false);
-        }
-
-        // Get animator component if not assigned
-        if (playerAnimator == null)
-        {
-            playerAnimator = GetComponent<Animator>();
         }
     }
 
@@ -62,22 +55,21 @@ public class PlayerHealth : MonoBehaviour
 
     private void PlayHurtEffects()
     {
-        // Play hurt sound if assigned
+        // Play hurt sound if an audio file is assigned
         if (hurtSound != null)
         {
-            hurtSound.Play();
+            AudioSource.PlayClipAtPoint(hurtSound, transform.position);
         }
 
-        // Play particle effect if assigned
-        if (hurtEffect != null)
+        // Spawn hurt effect prefab if assigned
+        if (hurtEffectPrefab != null)
         {
-            hurtEffect.Play();
+            Instantiate(hurtEffectPrefab, transform.position, Quaternion.identity);
+            Debug.Log("Hurt effect prefab spawned.");
         }
-
-        // Trigger hurt animation if animator is assigned
-        if (playerAnimator != null)
+        else
         {
-            playerAnimator.SetTrigger("Hurt");
+            Debug.LogWarning("HurtEffectPrefab is not assigned!");
         }
     }
 
@@ -106,12 +98,6 @@ public class PlayerHealth : MonoBehaviour
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(true);
-        }
-
-        // Trigger death animation if animator exists
-        if (playerAnimator != null)
-        {
-            playerAnimator.SetTrigger("Die");
         }
 
         // Disable player movement script if it exists
