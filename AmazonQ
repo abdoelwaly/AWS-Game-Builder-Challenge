@@ -1,0 +1,105 @@
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using System.Collections;
+
+public class AutoFadeSceneTransition : MonoBehaviour
+{
+    [Header("References")]
+    [SerializeField] private Image fadeImage;
+
+    [Header("Fade Settings")]
+    [SerializeField] private float fadeDuration = 2f;
+    [SerializeField] private Color fadeColor = Color.black;
+    [SerializeField] private bool fadeOnStart = true;
+
+    [Header("Scene Settings")]
+    [SerializeField] private string nextSceneName;
+
+    private void Awake()
+    {
+        // Validate components
+        if (fadeImage == null)
+        {
+            Debug.LogError("Fade Image is not assigned!");
+            enabled = false;
+            return;
+        }
+
+        // Ensure the fade image is active and starts fully transparent
+        fadeImage.gameObject.SetActive(true);
+        fadeImage.color = new Color(fadeColor.r, fadeColor.g, fadeColor.b, 0f);
+    }
+
+    private void Start()
+    {
+        if (fadeOnStart)
+        {
+            StartFadeToScene();
+        }
+    }
+
+    public void StartFadeToScene()
+    {
+        if (string.IsNullOrEmpty(nextSceneName))
+        {
+            Debug.LogError("Next scene name is not set!");
+            return;
+        }
+
+        StopAllCoroutines();
+        StartCoroutine(FadeOutAndLoadRoutine());
+    }
+
+    public void StartFadeToScene(string sceneName)
+    {
+        nextSceneName = sceneName;
+        StartFadeToScene();
+    }
+
+    private IEnumerator FadeOutAndLoadRoutine()
+    {
+        // First fade in from transparent
+        yield return StartCoroutine(FadeRoutine(0f, 1f));
+
+        // Load the scene
+        if (SceneManager.GetSceneByName(nextSceneName) != null)
+        {
+            Debug.Log($"Loading scene: {nextSceneName}");
+            SceneManager.LoadScene(nextSceneName);
+        }
+        else
+        {
+            Debug.LogError($"Scene '{nextSceneName}' not found in build settings!");
+        }
+    }
+
+    private IEnumerator FadeRoutine(float startAlpha, float targetAlpha)
+    {
+        float elapsedTime = 0f;
+        Color currentColor = fadeImage.color;
+
+        while (elapsedTime < fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float currentAlpha = Mathf.Lerp(startAlpha, targetAlpha, elapsedTime / fadeDuration);
+            fadeImage.color = new Color(fadeColor.r, fadeColor.g, fadeColor.b, currentAlpha);
+            yield return null;
+        }
+
+        // Ensure we reach the target alpha exactly
+        fadeImage.color = new Color(fadeColor.r, fadeColor.g, fadeColor.b, targetAlpha);
+    }
+
+    // Public method to set the next scene
+    public void SetNextScene(string sceneName)
+    {
+        nextSceneName = sceneName;
+    }
+
+    // Public method to set fade duration
+    public void SetFadeDuration(float duration)
+    {
+        fadeDuration = Mathf.Max(0.1f, duration); // Ensure duration is at least 0.1 seconds
+    }
+}
